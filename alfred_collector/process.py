@@ -53,5 +53,5 @@ class CollectorProcess(multiprocessing.Process):
     def handle_finish(self, report_id, data):
         (Report.__table__
             .update(bind=self.engine)
-            .where(Report.id==report_id)
+            .where(Report.id == report_id)
             .execute(error=data, finished_on=datetime.utcnow()))
