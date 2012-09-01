@@ -1,6 +1,8 @@
 Alfred Collector
 ================
 
+.. image:: https://secure.travis-ci.org/alfredhq/alfred-collector.png?branch=develop
+
 Collector receives report fixes from workers and stores them in the database.
 
 Report fixes must be sent as triples::
