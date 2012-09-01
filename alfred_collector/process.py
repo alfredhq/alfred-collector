@@ -1,12 +1,10 @@
 import msgpack
 import multiprocessing
 import zmq
+from alfred_db.models import Report, Fix
 from datetime import datetime
 from markdown import markdown
 from sqlalchemy import create_engine
-
-from alfred_db import Session
-from alfred_db.models import Commit, Report, Fix
 
 
 class CollectorProcess(multiprocessing.Process):
