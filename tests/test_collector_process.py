@@ -28,8 +28,11 @@ def create_report():
 
     repository = Repository(
         url='https://github.com/alfredhq/alfred',
+        github_id='12345',
         name='alfred',
-        user='alfredhq',
+        owner_name='alfredhq',
+        owner_type='organization',
+        owner_id='54321',
     )
     repository.commits.append(commit)
 
