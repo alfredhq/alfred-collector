@@ -1,3 +1,4 @@
+import json
 import msgpack
 import multiprocessing
 import zmq
@@ -45,8 +46,8 @@ class CollectorProcess(multiprocessing.Process):
             description_html=markdown(data['description']),
             path=data['path'],
             line=data['line'],
-            source=data['source'],
-            solution=data['solution'],
+            source=json.dumps(data['source']),
+            solution=json.dumps(data['solution']),
             report_id=report_id,
         )
 

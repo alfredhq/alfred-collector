@@ -80,8 +80,8 @@ class CollectorProcessTests(TestCase):
             'description': 'description',
             'path': 'path/to/file.py',
             'line': 100,
-            'source': 'source',
-            'solution': 'solution',
+            'source': (1, True, 'source'),
+            'solution': (1, True, 'solution'),
         })
 
         report = self.session.query(Report).get(report_id)
@@ -92,8 +92,8 @@ class CollectorProcessTests(TestCase):
         self.assertEqual(fix.description_html, '<p>description</p>')
         self.assertEqual(fix.path, 'path/to/file.py')
         self.assertEqual(fix.line, 100)
-        self.assertEqual(fix.source, 'source')
-        self.assertEqual(fix.solution, 'solution')
+        self.assertEqual(fix.source, '[1, true, "source"]')
+        self.assertEqual(fix.solution, '[1, true, "solution"]')
 
     @mock.patch('alfred_collector.process.CollectorProcess.handle_fix')
     @mock.patch('alfred_collector.process.CollectorProcess.handle_finish')
