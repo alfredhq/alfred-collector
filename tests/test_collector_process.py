@@ -30,6 +30,7 @@ def create_report():
         url='https://github.com/alfredhq/alfred',
         github_id='12345',
         name='alfred',
+        token='11111',
         owner_name='alfredhq',
         owner_type='organization',
         owner_id='54321',
