@@ -2,8 +2,10 @@ import json
 import msgpack
 import multiprocessing
 import zmq
+
 from alfred_db.models import Report, Fix
-from datetime import datetime
+from alfred_db.helpers import now
+
 from markdown import markdown
 from sqlalchemy import create_engine
 
@@ -55,4 +57,4 @@ class CollectorProcess(multiprocessing.Process):
         (Report.__table__
             .update(bind=self.engine)
             .where(Report.id == report_id)
-            .execute(error=data, finished_on=datetime.utcnow()))
+            .execute(error=data, finished_on=now()))
