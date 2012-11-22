@@ -13,7 +13,7 @@ from sqlalchemy import create_engine
 class CollectorProcess(multiprocessing.Process):
 
     def __init__(self, database_uri, socket_address):
-        super().__init__()
+        super(CollectorProcess, self).__init__()
         self.database_uri = database_uri
         self.socket_address = socket_address
 
