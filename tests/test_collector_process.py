@@ -3,7 +3,7 @@ import msgpack
 
 from alfred_collector.process import CollectorProcess
 from alfred_db import Session
-from alfred_db.models import Base, Repository, Commit, Report
+from alfred_db.models import Base, Repository, Push, Report
 
 from sqlalchemy import create_engine
 from unittest import TestCase
@@ -16,15 +16,15 @@ Session.configure(bind=engine)
 def create_report():
     report = Report()
 
-    commit = Commit(
-        hash='2e7be88382545a9dc7a05b9d2e85a7041e311075',
+    push = Push(
         ref='refs/heads/master',
         compare_url='https://github.com/xobb1t/test/compare/a90ff8353403...2e7be8838254',
+        commit_hash='2e7be88382545a9dc7a05b9d2e85a7041e311075',
+        commit_message='Update README.md',
         committer_name='Dima Kukushkin',
         committer_email='dima@kukushkin.me',
-        message='Update README.md',
     )
-    commit.report = report
+    push.report = report
 
     repository = Repository(
         url='https://github.com/alfredhq/alfred',
@@ -35,7 +35,7 @@ def create_report():
         owner_type='organization',
         owner_id='54321',
     )
-    repository.commits.append(commit)
+    repository.pushes.append(push)
 
     session = Session()
     session.add(repository)
