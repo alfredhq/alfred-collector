@@ -3,7 +3,7 @@ import msgpack
 import multiprocessing
 import zmq
 
-from alfred_db.models import Report, Fix
+from alfred_db.models import Push, Fix
 from alfred_db.helpers import now
 
 from markdown import markdown
@@ -32,7 +32,7 @@ class CollectorProcess(multiprocessing.Process):
         context.term()
 
     def handle_msg(self, msg):
-        report_id, msg_type, msg_data = msgpack.unpackb(msg, encoding='utf-8')
+        push_id, msg_type, msg_data = msgpack.unpackb(msg, encoding='utf-8')
 
         handlers = {
             'fix': self.handle_fix,
@@ -40,9 +40,9 @@ class CollectorProcess(multiprocessing.Process):
         }
         handler = handlers.get(msg_type)
         if handler is not None:
-            handler(report_id, msg_data)
+            handler(push_id, msg_data)
 
-    def handle_fix(self, report_id, data):
+    def handle_fix(self, push_id, data):
         Fix.__table__.insert(bind=self.engine).execute(
             description=data['description'],
             description_html=markdown(data['description']),
@@ -50,11 +50,11 @@ class CollectorProcess(multiprocessing.Process):
             line=data['line'],
             source=json.dumps(data['source']),
             solution=json.dumps(data['solution']),
-            report_id=report_id,
+            push_id=push_id,
         )
 
-    def handle_finish(self, report_id, data):
-        (Report.__table__
+    def handle_finish(self, push_id, data):
+        (Push.__table__
             .update(bind=self.engine)
-            .where(Report.id == report_id)
-            .execute(error=data, finished_on=now()))
+            .where(Push.id == push_id)
+            .execute(error=data, finished_at=now()))

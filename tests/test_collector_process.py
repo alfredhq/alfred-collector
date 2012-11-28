@@ -3,7 +3,7 @@ import msgpack
 
 from alfred_collector.process import CollectorProcess
 from alfred_db import Session
-from alfred_db.models import Base, Repository, Push, Report
+from alfred_db.models import Base, Repository, Push
 
 from sqlalchemy import create_engine
 from unittest import TestCase
@@ -13,9 +13,7 @@ engine = create_engine('sqlite:///:memory:')
 Session.configure(bind=engine)
 
 
-def create_report():
-    report = Report()
-
+def create_push():
     push = Push(
         ref='refs/heads/master',
         compare_url='https://github.com/xobb1t/test/compare/a90ff8353403...2e7be8838254',
@@ -24,7 +22,6 @@ def create_report():
         committer_name='Dima Kukushkin',
         committer_email='dima@kukushkin.me',
     )
-    push.report = report
 
     repository = Repository(
         url='https://github.com/alfredhq/alfred',
@@ -41,7 +38,7 @@ def create_report():
     session.add(repository)
     session.commit()
     try:
-        return report.id
+        return push.id
     finally:
         session.close()
 
@@ -59,25 +56,25 @@ class CollectorProcessTests(TestCase):
         self.session.close()
         Base.metadata.drop_all(engine)
 
-    def test_finishes_report(self):
-        report_id = create_report()
-        self.process.handle_finish(report_id, None)
+    def test_finishes_push(self):
+        push_id = create_push()
+        self.process.handle_finish(push_id, None)
 
-        report = self.session.query(Report).get(report_id)
-        self.assertIsNone(report.error)
-        self.assertIsNotNone(report.finished_on)
+        push = self.session.query(Push).get(push_id)
+        self.assertIsNone(push.error)
+        self.assertIsNotNone(push.finished_at)
 
-    def test_finishes_report_with_error(self):
-        report_id = create_report()
-        self.process.handle_finish(report_id, 'error')
+    def test_finishes_push_with_error(self):
+        push_id = create_push()
+        self.process.handle_finish(push_id, 'error')
 
-        report = self.session.query(Report).get(report_id)
-        self.assertEqual(report.error, 'error')
-        self.assertIsNotNone(report.finished_on)
+        push = self.session.query(Push).get(push_id)
+        self.assertEqual(push.error, 'error')
+        self.assertIsNotNone(push.finished_at)
 
-    def test_adds_fix_to_report(self):
-        report_id = create_report()
-        self.process.handle_fix(report_id, {
+    def test_adds_fix_to_push(self):
+        push_id = create_push()
+        self.process.handle_fix(push_id, {
             'description': 'description',
             'path': 'path/to/file.py',
             'line': 100,
@@ -85,10 +82,10 @@ class CollectorProcessTests(TestCase):
             'solution': (1, True, 'solution'),
         })
 
-        report = self.session.query(Report).get(report_id)
-        self.assertEqual(len(report.fixes.all()), 1)
+        push = self.session.query(Push).get(push_id)
+        self.assertEqual(len(push.fixes.all()), 1)
 
-        fix = report.fixes.first()
+        fix = push.fixes.first()
         self.assertEqual(fix.description, 'description')
         self.assertEqual(fix.description_html, '<p>description</p>')
         self.assertEqual(fix.path, 'path/to/file.py')

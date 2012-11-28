@@ -3,15 +3,15 @@ Alfred Collector
 
 .. image:: https://secure.travis-ci.org/alfredhq/alfred-collector.png?branch=develop
 
-Collector receives report fixes from workers and stores them in the database.
+Collector receives push fixes from workers and stores them in the database.
 
-Report fixes must be sent as triples::
+Push fixes must be sent as triples::
 
-    [:report_id, :type, :data]
+    [:push_id, :type, :data]
 
 Where:
 
-- ``report_id`` is an ID of the report. It must be of ``int`` type.
+- ``push_id`` is an ID of the push. It must be of ``int`` type.
 - ``type`` is a message type (``'fix'`` or ``'finish'``, messages with other
   types are ignored).
 - ``data`` is ``dict`` with a fix data in case of ``fix`` message, or error
