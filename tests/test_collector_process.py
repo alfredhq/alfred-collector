@@ -56,6 +56,13 @@ class CollectorProcessTests(TestCase):
         self.session.close()
         Base.metadata.drop_all(engine)
 
+    def test_starts_push(self):
+        push_id = create_push()
+        self.process.handle_start(push_id, None)
+
+        push = self.session.query(Push).get(push_id)
+        self.assertIsNotNone(push.started_at)
+
     def test_finishes_push(self):
         push_id = create_push()
         self.process.handle_finish(push_id, None)
@@ -93,9 +100,13 @@ class CollectorProcessTests(TestCase):
         self.assertEqual(fix.source, '[1, true, "source"]')
         self.assertEqual(fix.solution, '[1, true, "solution"]')
 
+    @mock.patch('alfred_collector.process.CollectorProcess.handle_start')
     @mock.patch('alfred_collector.process.CollectorProcess.handle_fix')
     @mock.patch('alfred_collector.process.CollectorProcess.handle_finish')
-    def test_handles_message(self, handle_finish, handle_fix):
+    def test_handles_message(self, handle_finish, handle_fix, handle_start):
+        self.process.handle_msg(msgpack.packb([1, 'start', None]))
+        handle_start.assert_called_once_with(1, None)
+
         self.process.handle_msg(msgpack.packb([1, 'fix', {}]))
         handle_fix.assert_called_once_with(1, {})
 

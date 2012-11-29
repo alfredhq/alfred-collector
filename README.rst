@@ -12,11 +12,11 @@ Push fixes must be sent as triples::
 Where:
 
 - ``push_id`` is an ID of the push. It must be of ``int`` type.
-- ``type`` is a message type (``'fix'`` or ``'finish'``, messages with other
-  types are ignored).
-- ``data`` is ``dict`` with a fix data in case of ``fix`` message, or error
-  message in case of ``finish`` message. If there is no error, ``None`` must
-  be sent.
+- ``type`` is a message type (``'start'``, ``'fix'`` or ``'finish'``, messages
+  with other types are ignored).
+- ``data`` is ``dict`` with a fix data in case of ``fix`` message, ``None`` in
+  case of ``start`` message, or error message in case of ``finish`` message. If
+  there is no error, ``None`` must be sent.
 
 You can run a collector using this command::
 

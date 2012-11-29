@@ -35,12 +35,19 @@ class CollectorProcess(multiprocessing.Process):
         push_id, msg_type, msg_data = msgpack.unpackb(msg, encoding='utf-8')
 
         handlers = {
+            'start': self.handle_start,
             'fix': self.handle_fix,
             'finish': self.handle_finish,
         }
         handler = handlers.get(msg_type)
         if handler is not None:
             handler(push_id, msg_data)
+
+    def handle_start(self, push_id, data):
+        (Push.__table__
+            .update(bind=self.engine)
+            .where(Push.id==push_id)
+            .execute(started_at=now()))
 
     def handle_fix(self, push_id, data):
         Fix.__table__.insert(bind=self.engine).execute(
